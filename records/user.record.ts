@@ -1,7 +1,19 @@
+import {pool} from "../utils/db";
 import {v4 as uuid} from "uuid";
-
+import {createHash} from "../utils/hash";
 
 class UserRecord {
+    private _id: string;
+    private _login: string;
+    private _password: string;
+    private _name: string;
+    private _created?: Date;
+    private _protein?: number;
+    private _fat?: number;
+    private _carbs?: number;
+    private _kcal?: number;
+    private _weight?: [number];
+
     constructor(obj: UserRecord) {
         obj.id ? this._id = obj.id : this._id = uuid();
         this._login = obj.login;
@@ -14,7 +26,22 @@ class UserRecord {
         if (obj.weight) this._weight = obj.weight;
     }
 
-    private _id: string;
+    async insert(): Promise<string> {
+        try {
+            await pool.execute(
+                "INSERT INTO `users`(`id`, `login`, `password`, `name`, `created`) VALUES(:id, :login, :password, :name, :created)", {
+                    id: this._id,
+                    login: this._login,
+                    password: createHash(this._password, process.env.passwordSALT),
+                    name: this._name,
+                    created: this._created,
+                });
+            return this._id;
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function Insert for User');
+        }
+    }
 
     get id(): string {
         return this._id;
@@ -24,8 +51,6 @@ class UserRecord {
         this._id = value;
     }
 
-    private _login: string;
-
     get login(): string {
         return this._login;
     }
@@ -33,8 +58,6 @@ class UserRecord {
     set login(value: string) {
         this._login = value;
     }
-
-    private _password: string;
 
     get password(): string {
         return this._password;
@@ -44,8 +67,6 @@ class UserRecord {
         this._password = value;
     }
 
-    private _name: string;
-
     get name(): string {
         return this._name;
     }
@@ -53,8 +74,6 @@ class UserRecord {
     set name(value: string) {
         this._name = value;
     }
-
-    private _created?: Date;
 
     get created(): Date {
         return this._created;
@@ -64,8 +83,6 @@ class UserRecord {
         this._created = value;
     }
 
-    private _protein?: number;
-
     get protein(): number {
         return this._protein;
     }
@@ -73,8 +90,6 @@ class UserRecord {
     set protein(value: number) {
         this._protein = value;
     }
-
-    private _fat?: number;
 
     get fat(): number {
         return this._fat;
@@ -84,8 +99,6 @@ class UserRecord {
         this._fat = value;
     }
 
-    private _carbs?: number;
-
     get carbs(): number {
         return this._carbs;
     }
@@ -94,8 +107,6 @@ class UserRecord {
         this._carbs = value;
     }
 
-    private _kcal?: number;
-
     get kcal(): number {
         return this._kcal;
     }
@@ -103,8 +114,6 @@ class UserRecord {
     set kcal(value: number) {
         this._kcal = value;
     }
-
-    private _weight?: [number];
 
     get weight(): [number] {
         return this._weight;
