@@ -1,7 +1,11 @@
 import {pool} from "../utils/db";
 import {v4 as uuid} from "uuid";
 import {createHash} from "../utils/hash";
-import {UserEntity} from "../types/user/user.entity";
+import {UserEntity, WeightDiaryRecord} from "../types/user/user.entity";
+import {FieldPacket} from "mysql2";
+
+type UserRecordResults = [UserRecord[], FieldPacket[]];
+type WeightDiaryResults = [WeightDiaryRecord[], FieldPacket[]]
 
 
 export class UserRecord {
@@ -15,7 +19,7 @@ export class UserRecord {
         if (obj.fat != undefined) this._fat = obj.fat;
         if (obj.carbs != undefined) this._carbs = obj.carbs;
         if (obj.kcal != undefined) this._kcal = obj.kcal;
-        if (obj.weight != undefined) this._weight = obj.weight;
+        if (obj.weightDiary != undefined) this._weightDiary = obj.weightDiary;
     }
     private _login: string;
     private _password: string;
@@ -25,7 +29,7 @@ export class UserRecord {
     private _fat?: number;
     private _carbs?: number;
     private _kcal?: number;
-    private _weight?: [number];
+    private _weightDiary?: WeightDiaryRecord[] | null;
 
     private _id?: string;
 
@@ -101,12 +105,12 @@ export class UserRecord {
         this._kcal = value;
     }
 
-    get weight(): [number] | undefined {
-        return this._weight;
+    get weightDiary(): WeightDiaryRecord[] | null {
+        return this._weightDiary;
     }
 
-    set weight(value: [number] | undefined) {
-        this._weight = value;
+    set weightDiary(value: WeightDiaryRecord[] | null) {
+        this._weightDiary = value;
     }
 
     async insert(): Promise<string> {

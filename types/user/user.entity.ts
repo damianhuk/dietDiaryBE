@@ -8,5 +8,7 @@ export interface UserEntity {
     fat?: number;
     carbs?: number;
     kcal?: number;
-    weight?: [number];
+    weightDiary?: WeightDiaryRecord[] | null;
 }
+
+export type WeightDiaryRecord = { weight: number, created: Date }
