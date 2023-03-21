@@ -180,6 +180,21 @@ export class UserRecord {
         }
     }
 
+    static async logIn(login: string, password: string): Promise<UserRecord> | null {
+        try {
+            const [result] = (await pool.execute(
+                    "SELECT * FROM `users` WHERE `login` = :login AND `password` = :password", {
+                        login,
+                        password: createHash(password, process.env.passwordSALT)
+                    }) as UserRecordResults
+            )
+            return result.length != 0 ? UserRecord.getOne(result[0].id) : null;
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function logIn for User');
+        }
+    }
+
     static async getOne(id: string): Promise<UserRecord> | null {
         try {
             const [results] = await pool.execute(
