@@ -15,12 +15,16 @@ app.use(cors({
 app.use(json());
 
 app.get('/', async (req: Request, res: Response) => {
-    const user = new UserRecord({
-        name: 'Testowanie wstawianai 2 rekoródw',
-        login: 'Tester123',
-        password: 'asdasd',
-    });
-    console.log(await user.insert());
+    /* const user = new UserRecord({
+         name: 'Testowanie wstawianai wagi',
+         login: 'waga',
+         password: 'asdasd',
+         weight: [99]
+     });
+     console.log(await user.insert());*/
+    const test = await UserRecord.getOne('b957d1f3-3abe-4353-b7eb-e19eaf3c7502');
+    //const test = await UserRecord.getAll();
+    console.log(test);
 })
 
 app.use(handleError);

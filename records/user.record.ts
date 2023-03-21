@@ -9,6 +9,18 @@ type WeightDiaryResults = [WeightDiaryRecord[], FieldPacket[]]
 
 
 export class UserRecord {
+    private _login: string;
+    private _password: string;
+    private _name: string;
+    private _created?: Date;
+    private _protein?: number;
+    private _fat?: number;
+    private _carbs?: number;
+    private _kcal?: number;
+    private _weightDiary?: WeightDiaryRecord[] | null = null;
+
+    private _id?: string;
+
     constructor(obj: UserEntity) {
         this._login = obj.login;
         this._name = obj.name;
@@ -19,19 +31,8 @@ export class UserRecord {
         if (obj.fat != undefined) this._fat = obj.fat;
         if (obj.carbs != undefined) this._carbs = obj.carbs;
         if (obj.kcal != undefined) this._kcal = obj.kcal;
-        if (obj.weightDiary != undefined) this._weightDiary = obj.weightDiary;
+        if (obj.weightDiary != null) this._weightDiary = obj.weightDiary;
     }
-    private _login: string;
-    private _password: string;
-    private _name: string;
-    private _created?: Date;
-    private _protein?: number;
-    private _fat?: number;
-    private _carbs?: number;
-    private _kcal?: number;
-    private _weightDiary?: WeightDiaryRecord[] | null;
-
-    private _id?: string;
 
     get id(): string | undefined {
         return this._id;
@@ -133,4 +134,29 @@ export class UserRecord {
             throw new Error('Something gone wrong in function Insert for User');
         }
     }
+
+    static async getOne(id: string): Promise<UserRecord> | null {
+        try {
+            const [results] = await pool.execute(
+                "SELECT `users`.`id`, `users`.`login`, `users`.`password`, `users`.`name`, `users`.`created`, `user_details`.`protein`, `user_details`.`fat`, `user_details`.`carbs`, `user_details`.`kcal`  FROM `users` JOIN `user_details` ON `user_details`.`userId` = `users`.`id` WHERE `users`.`id` = :userId", {
+                    userId: id
+                }) as UserRecordResults;
+
+            if (results.length === 0) return null;
+
+            const user: UserRecord = new UserRecord(results[0]);
+
+            const [result2] = await pool.execute(
+                "SELECT `user_weight_progress`.`weight`, `user_weight_progress`.`created` FROM `user_weight_progress` WHERE `user_weight_progress`.`userId` = :userId", {
+                    userId: id
+                }) as WeightDiaryResults;
+            user.weightDiary = result2.length - 1 > 0 ? [...result2] : null
+            return user
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function getOne for User');
+        }
+    }
+
+
 }

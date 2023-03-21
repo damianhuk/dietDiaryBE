@@ -11,4 +11,4 @@ export interface UserEntity {
     weightDiary?: WeightDiaryRecord[] | null;
 }
 
-export type WeightDiaryRecord = { weight: number, created: Date }
+export type WeightDiaryRecord = { id?: number, userId?: string, weight: number, created: Date }
