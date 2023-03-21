@@ -135,11 +135,43 @@ export class UserRecord {
         }
     }
 
+    async update(changePassword: boolean = false): Promise<void> {
+        try {
+            if (changePassword) {
+                await pool.execute(
+                    "UPDATE `users` SET `password` = :password WHERE `id` = :id", {
+                        password: createHash(this._password, process.env.passwordSALT),
+                        id: this._id
+                    }
+                )
+            }
+
+            await pool.execute(
+                "UPDATE `user_details` SET `protein` = :protein, `fat` = :fat, `carbs` = :carbs, `kcal` = :kcal WHERE `userId` = :id", {
+                    id: this._id,
+                    fat: this._fat,
+                    protein: this._protein,
+                    carbs: this._carbs,
+                    kcal: this._kcal
+                }
+            )
+            await pool.execute(
+                "INSERT INTO `user_weight_progress`(`userId`, `weight`, `created`) VALUES(:userId, :weight, :created)", {
+                    userId: this._id,
+                    weight: this._weightDiary[this._weightDiary.length - 1].weight,
+                    created: this._weightDiary[this._weightDiary.length - 1].created,
+                });
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function Update for User');
+        }
+    }
+
     async delete(): Promise<void> {
         try {
             await pool.execute(
                 "DELETE FROM `users` WHERE `id` =:id", {
-                    id: this.id
+                    id: this._id
                 }
             )
         } catch (e) {
