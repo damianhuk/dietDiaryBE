@@ -135,6 +135,19 @@ export class UserRecord {
         }
     }
 
+    async delete(): Promise<void> {
+        try {
+            await pool.execute(
+                "DELETE FROM `users` WHERE `id` =:id", {
+                    id: this.id
+                }
+            )
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function Delete for User');
+        }
+    }
+
     static async getOne(id: string): Promise<UserRecord> | null {
         try {
             const [results] = await pool.execute(
