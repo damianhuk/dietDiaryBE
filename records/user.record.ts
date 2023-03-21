@@ -158,5 +158,31 @@ export class UserRecord {
         }
     }
 
+    static async getAll(): Promise<UserRecord[]> | null {
+        try {
+            const [results] = await pool.execute(
+                "SELECT `users`.`id`, `users`.`login`, `users`.`password`, `users`.`name`, `users`.`created`, `user_details`.`protein`, `user_details`.`fat`, `user_details`.`carbs`, `user_details`.`kcal`  FROM `users` JOIN `user_details` ON `user_details`.`userId` = `users`.`id`"
+            ) as UserRecordResults;
 
+            if (results.length === 0) return null;
+
+            const users = results.map(obj => new UserRecord(obj));
+            const [result2] = await pool.execute("SELECT * FROM `user_weight_progress`") as WeightDiaryResults;
+            users.map(el => {
+                result2.forEach(el2 => {
+                    if (el.id === el2.userId) {
+                        const {weight, created} = el2
+                        el.weightDiary === null ? el.weightDiary = [{weight, created}] : el.weightDiary.push({
+                            weight,
+                            created
+                        })
+                    }
+                })
+            })
+            return users;
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function getAll for User');
+        }
+    }
 }
