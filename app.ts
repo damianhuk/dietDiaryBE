@@ -1,7 +1,10 @@
-import express, {json} from "express";
+import express, {json, Request, Response} from "express";
 import cors from 'cors';
 import 'express-async-errors';
 import {handleError} from "./utils/errors";
+import {UserRecord} from "./records/user.record";
+
+require('dotenv').config()
 
 const app = express();
 
@@ -11,6 +14,18 @@ app.use(cors({
 
 app.use(json());
 
+app.get('/', async (req: Request, res: Response) => {
+    /* const user = new UserRecord({
+         name: 'Testowanie wstawianai wagi',
+         login: 'waga',
+         password: 'asdasd',
+         weight: [99]
+     });
+     console.log(await user.insert());*/
+    const test = await UserRecord.getOne('b957d1f3-3abe-4353-b7eb-e19eaf3c7502');
+    //const test = await UserRecord.getAll();
+    console.log(test);
+})
 
 app.use(handleError);
 
