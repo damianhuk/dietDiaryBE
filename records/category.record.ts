@@ -11,11 +11,12 @@ export class CategoryRecord {
 
     async insert(): Promise<void> {
         try {
-            await pool.execute(
+            const [results] = (await pool.execute(
                 "INSERT INTO `categories` (`name`) VALUES (:name)", {
                     name: this._name
                 }
-            )
+            )) as [ResultSetHeader, FieldPacket[]]
+            this._id = results.insertId;
         } catch (e) {
             console.log(e)
             throw new Error('Something gone wrong in function Insert for Category');
