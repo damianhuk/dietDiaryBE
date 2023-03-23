@@ -28,11 +28,19 @@ app.get('/', async (req: Request, res: Response) => {
     /*
         const category = new CategoryRecord('Testwowanko');
         await category.insert();*/
-    const category = await CategoryRecord.getOne(2);
+    //const category = await CategoryRecord.getOne(2);
     //const category = await CategoryRecord.getAll();
-    category.name = 'Update';
+    /*category.name = 'Update';
     await category.update();
-    console.log(category);
+    console.log(category);*/
+    const category = new CategoryRecord('test');
+    await category.insert();
+    let categories = await CategoryRecord.getAll();
+    console.log(categories);
+    console.log('=================')
+    await category.delete();
+    categories = await CategoryRecord.getAll();
+    console.log(categories)
 })
 
 app.use(handleError);

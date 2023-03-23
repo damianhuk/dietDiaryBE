@@ -1,5 +1,5 @@
 import {pool} from "../utils/db";
-import {FieldPacket} from "mysql2/index";
+import {FieldPacket, ResultSetHeader} from "mysql2/index";
 
 type CategoryRecordResults = [CategoryRecord[], FieldPacket[]];
 
@@ -19,6 +19,33 @@ export class CategoryRecord {
         } catch (e) {
             console.log(e)
             throw new Error('Something gone wrong in function Insert for Category');
+        }
+    }
+
+    async update(): Promise<void> {
+        try {
+            await pool.execute(
+                "UPDATE `categories` SET `name` = :name WHERE `id` = :id", {
+                    name: this._name,
+                    id: this._id
+                }
+            )
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function Update for Category');
+        }
+    }
+
+    async delete(): Promise<void> {
+        try {
+            await pool.execute(
+                "DELETE FROM `categories` WHERE `id` =:id", {
+                    id: this._id
+                }
+            )
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function Delete for Category');
         }
     }
 
@@ -42,20 +69,6 @@ export class CategoryRecord {
         } catch (e) {
             console.log(e)
             throw new Error('Something gone wrong in function getAll for Category');
-        }
-    }
-
-    async update(): Promise<void> {
-        try {
-            await pool.execute(
-                "UPDATE `categories` SET `name` = :name WHERE `id` = :id", {
-                    name: this._name,
-                    id: this._id
-                }
-            )
-        } catch (e) {
-            console.log(e)
-            throw new Error('Something gone wrong in function Update for Category');
         }
     }
 
