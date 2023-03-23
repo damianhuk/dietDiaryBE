@@ -28,7 +28,7 @@ export class CategoryRecord {
                 "SELECT *  FROM `categories` WHERE `id` = :id", {
                     id
                 }) as CategoryRecordResults;
-            return results.length === 0 ? null : new CategoryRecord(results[0].name)
+            return results.length === 0 ? null : new CategoryRecord(results[0].name, results[0].id)
         } catch (e) {
             console.log(e)
             throw new Error('Something gone wrong in function getOne for Category');
@@ -38,10 +38,10 @@ export class CategoryRecord {
     static async getAll(): Promise<CategoryRecord[]> {
         try {
             const [results] = await pool.execute("SELECT *  FROM `categories`") as CategoryRecordResults;
-            return results.length === 0 ? null : results.map(obj => new CategoryRecord(obj.name))
+            return results.length === 0 ? null : results.map(obj => new CategoryRecord(obj.name, obj.id))
         } catch (e) {
             console.log(e)
-            throw new Error('Something gone wrong in function getOne for Category');
+            throw new Error('Something gone wrong in function getAll for Category');
         }
     }
 
