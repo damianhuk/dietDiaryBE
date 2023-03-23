@@ -45,6 +45,20 @@ export class CategoryRecord {
         }
     }
 
+    async update(): Promise<void> {
+        try {
+            await pool.execute(
+                "UPDATE `categories` SET `name` = :name WHERE `id` = :id", {
+                    name: this._name,
+                    id: this._id
+                }
+            )
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function Update for Category');
+        }
+    }
+
     private _id?: number;
 
     get id(): number {
