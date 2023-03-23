@@ -35,6 +35,16 @@ export class CategoryRecord {
         }
     }
 
+    static async getAll(): Promise<CategoryRecord[]> {
+        try {
+            const [results] = await pool.execute("SELECT *  FROM `categories`") as CategoryRecordResults;
+            return results.length === 0 ? null : results.map(obj => new CategoryRecord(obj.name))
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function getOne for Category');
+        }
+    }
+
     private _id?: number;
 
     get id(): number {

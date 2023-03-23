@@ -28,8 +28,8 @@ app.get('/', async (req: Request, res: Response) => {
     /*
         const category = new CategoryRecord('Testwowanko');
         await category.insert();*/
-    const category = await CategoryRecord.getOne(2);
-
+    //const category = await CategoryRecord.getOne(2);
+    const category = await CategoryRecord.getAll();
     console.log(category);
 })
 
