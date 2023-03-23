@@ -22,6 +22,18 @@ export class CategoryRecord {
         }
     }
 
+    static async getOne(id: number): Promise<CategoryRecord> {
+        try {
+            const [results] = await pool.execute(
+                "SELECT *  FROM `categories` WHERE `id` = :id", {
+                    id
+                }) as CategoryRecordResults;
+            return results.length === 0 ? null : new CategoryRecord(results[0].name)
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function getOne for Category');
+        }
+    }
 
     private _id?: number;
 

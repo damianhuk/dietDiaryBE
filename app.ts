@@ -25,10 +25,12 @@ app.get('/', async (req: Request, res: Response) => {
     const test = await UserRecord.getOne('b957d1f3-3abe-4353-b7eb-e19eaf3c7502');
     //const test = await UserRecord.getAll();
     console.log(test);*/
+    /*
+        const category = new CategoryRecord('Testwowanko');
+        await category.insert();*/
+    const category = await CategoryRecord.getOne(2);
 
-    const category = new CategoryRecord('Testwowanko');
-    await category.insert();
-
+    console.log(category);
 })
 
 app.use(handleError);
