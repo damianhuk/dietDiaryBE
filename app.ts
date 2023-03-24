@@ -2,7 +2,7 @@ import express, {json, Request, Response} from "express";
 import cors from 'cors';
 import 'express-async-errors';
 import {handleError} from "./utils/errors";
-import {UserRecord} from "./records/user.record";
+import {CategoryRecord} from "./records/category.record";
 
 require('dotenv').config()
 
@@ -21,10 +21,26 @@ app.get('/', async (req: Request, res: Response) => {
          password: 'asdasd',
          weight: [99]
      });
-     console.log(await user.insert());*/
+     console.log(await user.insert());
     const test = await UserRecord.getOne('b957d1f3-3abe-4353-b7eb-e19eaf3c7502');
     //const test = await UserRecord.getAll();
-    console.log(test);
+    console.log(test);*/
+    /*
+        const category = new CategoryRecord('Testwowanko');
+        await category.insert();*/
+    //const category = await CategoryRecord.getOne(2);
+    //const category = await CategoryRecord.getAll();
+    /*category.name = 'Update';
+    await category.update();
+    console.log(category);*/
+    const category = new CategoryRecord('test');
+    await category.insert();
+    let categories = await CategoryRecord.getAll();
+    console.log(categories);
+    console.log('=================')
+    await category.delete();
+    categories = await CategoryRecord.getAll();
+    console.log(categories)
 })
 
 app.use(handleError);
