@@ -59,6 +59,25 @@ export class ProductRecord {
         }
     }
 
+    async update(): Promise<void> {
+        try {
+            await pool.execute(
+                "UPDATE `products` SET `categoryId` = :categoryId, `name` = :name, `protein` = :protein, `fat` = :fat, `carbs` = :carbs, `kcal` = :kcal WHERE `products`.`id` = :id", {
+                    categoryId: this._categoryId,
+                    name: this._name,
+                    protein: this._protein,
+                    fat: this._fat,
+                    carbs: this._carbs,
+                    kcal: this._kcal,
+                    id: this._id
+                }
+            )
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function Update for Product');
+        }
+    }
+
     get name(): string {
         return this._name;
     }
