@@ -107,6 +107,16 @@ export class ProductRecord {
         }
     }
 
+    static async getAll(): Promise<ProductRecord[]> {
+        try {
+            const [results] = await pool.execute("SELECT *  FROM `products`") as ProductRecordResults;
+            return results.length === 0 ? null : results.map(obj => new ProductRecord(obj.categoryId, obj.name, obj.protein, obj.fat, obj.carbs, obj.kcal, obj.userId, obj.id))
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function getAll for Product');
+        }
+    }
+
     get name(): string {
         return this._name;
     }
