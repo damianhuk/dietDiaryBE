@@ -78,6 +78,19 @@ export class ProductRecord {
         }
     }
 
+    async delete(): Promise<void> {
+        try {
+            await pool.execute(
+                "DELETE FROM `products` WHERE `products`.`id` = :id", {
+                    id: this._id
+                }
+            )
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function Delete for Product');
+        }
+    }
+
     get name(): string {
         return this._name;
     }
