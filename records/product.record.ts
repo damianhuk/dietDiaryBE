@@ -1,6 +1,7 @@
 import {pool} from "../utils/db";
 import {FieldPacket, ResultSetHeader} from "mysql2/index";
 
+type ProductRecordResults = [ProductRecord[], FieldPacket[]];
 export class ProductRecord {
     private _id?: number;
     private _name: string;
@@ -88,6 +89,21 @@ export class ProductRecord {
         } catch (e) {
             console.log(e)
             throw new Error('Something gone wrong in function Delete for Product');
+        }
+    }
+
+    static async getOne(id: number): Promise<ProductRecord> | null {
+        try {
+            const [results] = (await pool.execute(
+                "SELECT * FROM `products` WHERE `id`= :id", {
+                    id
+                }
+            )) as ProductRecordResults;
+
+            return results.length === 0 ? null : new ProductRecord(results[0].categoryId, results[0].name, results[0].protein, results[0].fat, results[0].carbs, results[0].kcal, results[0].userId, results[0].id)
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function getOne for Product');
         }
     }
 
