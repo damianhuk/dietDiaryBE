@@ -1,6 +1,18 @@
+import {pool} from "../utils/db";
+import {FieldPacket, ResultSetHeader} from "mysql2/index";
+
 export class ProductRecord {
-    constructor(name: string, protein: number, fat: number, carbs: number, kcal: number, userId: string, id?: number) {
+    private _id?: number;
+    private _name: string;
+    private _protein: number;
+    private _fat: number;
+    private _carbs: number;
+    private _kcal: number;
+    private _userId: string;
+
+    constructor(categoryId: number, name: string, protein: number, fat: number, carbs: number, kcal: number, userId: string, id?: number) {
         if (id != undefined) this._id = id;
+        this._categoryId = categoryId;
         this._name = name;
         this._protein = protein;
         this._fat = fat;
@@ -9,7 +21,11 @@ export class ProductRecord {
         this._userId = userId;
     }
 
-    private _id?: number;
+    private _categoryId: number;
+
+    get categoryId(): number {
+        return this._categoryId;
+    }
 
     get id(): number {
         return this._id;
@@ -19,7 +35,29 @@ export class ProductRecord {
         this._id = value;
     }
 
-    private _name: string;
+    set categoryId(value: number) {
+        this._categoryId = value;
+    }
+
+    async insert(): Promise<void> {
+        try {
+            const [results] = (await pool.execute(
+                "INSERT INTO `products` (`categoryId`, `name`, `protein`, `fat`, `carbs`, `kcal`, `userId`) VALUES (:categoryId, :name, :protein, :fat, :carbs, :kcal, :userId)", {
+                    categoryId: this._categoryId,
+                    name: this._name,
+                    protein: this._protein,
+                    fat: this._fat,
+                    carbs: this._carbs,
+                    kcal: this._kcal,
+                    userId: this._userId
+                }
+            )) as [ResultSetHeader, FieldPacket[]];
+            this._id = results.insertId;
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function Insert for Product');
+        }
+    }
 
     get name(): string {
         return this._name;
@@ -29,8 +67,6 @@ export class ProductRecord {
         this._name = value;
     }
 
-    private _protein: number;
-
     get protein(): number {
         return this._protein;
     }
@@ -38,8 +74,6 @@ export class ProductRecord {
     set protein(value: number) {
         this._protein = value;
     }
-
-    private _fat: number;
 
     get fat(): number {
         return this._fat;
@@ -49,8 +83,6 @@ export class ProductRecord {
         this._fat = value;
     }
 
-    private _carbs: number;
-
     get carbs(): number {
         return this._carbs;
     }
@@ -59,8 +91,6 @@ export class ProductRecord {
         this._carbs = value;
     }
 
-    private _kcal: number;
-
     get kcal(): number {
         return this._kcal;
     }
@@ -68,8 +98,6 @@ export class ProductRecord {
     set kcal(value: number) {
         this._kcal = value;
     }
-
-    private _userId: string;
 
     get userId(): string {
         return this._userId;
