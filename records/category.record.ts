@@ -1,9 +1,14 @@
 import {pool} from "../utils/db";
 import {FieldPacket, ResultSetHeader} from "mysql2/index";
+import {ProductRecord} from "./product.record";
 
 type CategoryRecordResults = [CategoryRecord[], FieldPacket[]];
 
 export class CategoryRecord {
+    private _name: string
+    private _id?: number;
+    private _products?: ProductRecord[] | null;
+
     constructor(name: string, id?: number) {
         this._name = name;
         if (id != undefined) this._id = id
@@ -50,6 +55,10 @@ export class CategoryRecord {
         }
     }
 
+    get products(): ProductRecord[] | null {
+        return this._products;
+    }
+
     static async getOne(id: number): Promise<CategoryRecord> {
         try {
             const [results] = await pool.execute(
@@ -73,8 +82,6 @@ export class CategoryRecord {
         }
     }
 
-    private _id?: number;
-
     get id(): number {
         return this._id;
     }
@@ -83,13 +90,27 @@ export class CategoryRecord {
         this._id = value;
     }
 
-    private _name: string
-
     get name(): string {
         return this._name;
     }
 
     set name(value: string) {
         this._name = value;
+    }
+
+    set products(value: ProductRecord[] | null) {
+        this._products = value;
+    }
+
+    async getProducts(): Promise<void> {
+        try {
+            const [results] = await pool.execute("SELECT *  FROM `products` WHERE `categoryId` = :id", {
+                id: this._id
+            }) as [ProductRecord[], FieldPacket[]];
+            this.products = results.map(obj => new ProductRecord(obj.categoryId, obj.name, obj.protein, obj.fat, obj.carbs, obj.kcal, obj.userId, obj.id))
+        } catch (e) {
+            console.log(e)
+            throw new Error('Something gone wrong in function getProducts for Category');
+        }
     }
 }
